@@ -5,7 +5,9 @@ import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { StoryProvider } from "./story-context";
 import { ProgressRail } from "./progress-rail";
-import { DesktopHint } from "@/components/ui";
+import { StoryAnnouncer } from "./story-announcer";
+import { DesktopHint, MotionToggle } from "@/components/ui";
+import { useMobile } from "@/lib/hooks/use-mobile";
 import type { XeetWrappedData, NavigationDirection } from "@/lib/types";
 
 interface StoryContainerProps {
@@ -24,22 +26,14 @@ export function StoryContainer({
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
   const [direction, setDirection] = useState<NavigationDirection>("next");
-  const [reducedMotion, setReducedMotion] = useState(false);
   const router = useRouter();
   const autoAdvanceTimerRef = useRef<NodeJS.Timeout | null>(null);
   const pauseTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Get reduced motion state from hook (includes manual override)
+  const { prefersReducedMotion: reducedMotion } = useMobile();
 
   const totalSlides = slides.length;
-
-  // Check for reduced motion preference
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReducedMotion(mediaQuery.matches);
-
-    const handler = (e: MediaQueryListEvent) => setReducedMotion(e.matches);
-    mediaQuery.addEventListener("change", handler);
-    return () => mediaQuery.removeEventListener("change", handler);
-  }, []);
 
   // Clear timers on unmount
   useEffect(() => {
@@ -230,6 +224,12 @@ export function StoryContainer({
 
   const variants = getTransitionVariants();
 
+  // Handle motion toggle callback - trigger re-render when manual toggle changes
+  const handleMotionToggle = useCallback(() => {
+    // Dispatch custom event to trigger useMobile hook update
+    window.dispatchEvent(new Event("motion-toggle"));
+  }, []);
+
   const contextValue = {
     currentSlide,
     totalSlides,
@@ -240,6 +240,7 @@ export function StoryContainer({
     isPaused,
     togglePause,
     direction,
+    reducedMotion,
   };
 
   return (
@@ -251,6 +252,8 @@ export function StoryContainer({
           className="h-screen w-screen cursor-pointer"
           onPanEnd={handlePanEnd}
           onClick={handleClick}
+          role="main"
+          aria-label="Story slides"
         >
           <AnimatePresence mode="wait" initial={false}>
             <motion.div
@@ -270,14 +273,21 @@ export function StoryContainer({
           </AnimatePresence>
         </motion.div>
 
+        {/* Screen reader announcements */}
+        <StoryAnnouncer />
+
+        {/* Motion toggle */}
+        <MotionToggle onToggle={handleMotionToggle} />
+
         {/* Desktop hint banner for mobile users */}
         <DesktopHint />
 
         {/* Debug info (optional, remove in production) */}
         {process.env.NODE_ENV === "development" && (
-          <div className="fixed bottom-4 left-4 text-xs mono-caption text-white/40 pointer-events-none">
+          <div className="fixed bottom-16 left-4 text-xs mono-caption text-white/40 pointer-events-none">
             Slide {currentSlide + 1} / {totalSlides}
             {isPaused && " (Paused)"}
+            {reducedMotion && " (Reduced Motion)"}
           </div>
         )}
       </div>

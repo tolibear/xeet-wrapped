@@ -35,3 +35,5 @@ export { PosterPreview } from "./poster-preview";
 export type { PosterPreviewProps } from "./poster-preview";
 
 export { DesktopHint } from "./desktop-hint";
+
+export { MotionToggle } from "./motion-toggle";

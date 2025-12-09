@@ -11,3 +11,17 @@ export { TerminalGradient } from "./terminal-gradient";
 
 // React Bits WebGL backgrounds
 export { Silk, Aurora, Plasma, Beams, Iridescence } from "./react-bits";
+
+// Lazy-loaded backgrounds (recommended for production)
+export { 
+  SmartSilk, 
+  SmartAurora, 
+  SmartPlasma, 
+  SmartBeams, 
+  SmartIridescence,
+  LazySilk,
+  LazyAurora,
+  LazyPlasma,
+  LazyBeams,
+  LazyIridescence,
+} from "./lazy-backgrounds";

@@ -22,11 +22,15 @@ export function CategoryTabs({
   className,
 }: CategoryTabsProps) {
   return (
-    <div className={cn(
-      "flex gap-2 p-1 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10",
-      "overflow-x-auto scrollbar-hide",
-      className
-    )}>
+    <div 
+      className={cn(
+        "flex gap-2 p-1 rounded-lg bg-white/5 backdrop-blur-sm border border-white/10",
+        "overflow-x-auto scrollbar-hide",
+        className
+      )}
+      role="tablist"
+      aria-label="Content categories"
+    >
       {tabs.map((tab) => {
         const isActive = tab.id === activeTab;
         
@@ -34,6 +38,9 @@ export function CategoryTabs({
           <button
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
+            role="tab"
+            aria-selected={isActive}
+            aria-controls={`tabpanel-${tab.id}`}
             className={cn(
               "relative px-4 md:px-6 py-3 md:py-2.5 rounded-md text-sm font-medium transition-colors",
               "focus:outline-none focus-visible:ring-2 focus-visible:ring-red-primary/50",

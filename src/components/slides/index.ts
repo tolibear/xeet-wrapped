@@ -17,3 +17,8 @@ export { FriendsSlide } from "./friends-slide";
 export { TerminalSlide } from "./terminal-slide";
 export { AchievementsSlide } from "./achievements-slide";
 export { FinalPosterSlide } from "./final-poster-slide";
+export { ShareFinalSlide } from "./share-final-slide";
+
+// Utility components (Phase 9)
+export { EmptyState, ErrorState, NoDataState } from "./empty-state";
+export type { EmptyStateProps } from "./empty-state";

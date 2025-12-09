@@ -8,7 +8,7 @@ import { Silk } from "@/components/backgrounds";
 import { generateAndDownloadPoster } from "@/lib/utils/poster-generator";
 import { copyToClipboard, generateShareLink, generateCaption } from "@/lib/utils/clipboard";
 
-type ActionState = "idle" | "loading" | "success";
+type ActionState = "idle" | "loading" | "success" | "error";
 
 export function FinalPosterSlide() {
   const { wrappedData } = useStory();
@@ -34,13 +34,19 @@ export function FinalPosterSlide() {
       wrappedData.user.handle
     );
 
-    setState(success ? "success" : "idle");
+    setState(success ? "success" : "error");
     
     // Reset to story aspect ratio after download
     setCurrentAspectRatio("story");
 
     if (success) {
-      setTimeout(() => setState("idle"), 2000);
+      // Trigger haptic feedback on mobile
+      if (typeof navigator !== "undefined" && "vibrate" in navigator) {
+        navigator.vibrate(50);
+      }
+      setTimeout(() => setState("idle"), 3000);
+    } else {
+      setTimeout(() => setState("idle"), 4000);
     }
   };
 
@@ -48,10 +54,17 @@ export function FinalPosterSlide() {
     setLinkState("loading");
     const link = generateShareLink(wrappedData.user.handle);
     const success = await copyToClipboard(link);
-    setLinkState(success ? "success" : "idle");
+    setLinkState(success ? "success" : "error");
+
+    // Trigger haptic feedback on mobile
+    if (success && typeof navigator !== "undefined" && "vibrate" in navigator) {
+      navigator.vibrate(30);
+    }
 
     if (success) {
-      setTimeout(() => setLinkState("idle"), 2000);
+      setTimeout(() => setLinkState("idle"), 3000);
+    } else {
+      setTimeout(() => setLinkState("idle"), 4000);
     }
   };
 
@@ -66,29 +79,51 @@ export function FinalPosterSlide() {
       }
     );
     const success = await copyToClipboard(caption);
-    setCaptionState(success ? "success" : "idle");
+    setCaptionState(success ? "success" : "error");
+
+    // Trigger haptic feedback on mobile
+    if (success && typeof navigator !== "undefined" && "vibrate" in navigator) {
+      navigator.vibrate(30);
+    }
 
     if (success) {
-      setTimeout(() => setCaptionState("idle"), 2000);
+      setTimeout(() => setCaptionState("idle"), 3000);
+    } else {
+      setTimeout(() => setCaptionState("idle"), 4000);
     }
   };
 
-  const getButtonText = (state: ActionState, defaultText: string, successText: string) => {
+  const getButtonText = (
+    state: ActionState, 
+    defaultText: string, 
+    successText: string,
+    errorText: string = "Failed - Try Again"
+  ) => {
     switch (state) {
       case "loading":
         return "Processing...";
       case "success":
         return successText;
+      case "error":
+        return errorText;
       default:
         return defaultText;
     }
+  };
+
+  const getButtonVariant = (state: ActionState): "solid" | "outline" => {
+    return state === "error" ? "outline" : "solid";
   };
 
   return (
     <div className="relative h-full w-full overflow-hidden">
       <Silk color="#FF0033" speed={2} scale={1} noiseIntensity={1.3} />
 
-      <div className="relative z-10 h-full flex items-center justify-center px-6 py-12 overflow-y-auto">
+      <div 
+        className="relative z-10 h-full flex items-center justify-center px-6 py-12 overflow-y-auto"
+        role="region"
+        aria-label="Share your story"
+      >
         <div className="w-full max-w-6xl">
           <motion.div
             initial={{ opacity: 0 }}
@@ -98,15 +133,30 @@ export function FinalPosterSlide() {
           >
             {/* Header */}
             <div className="text-center space-y-3">
-              <p className="mono-caption text-[var(--red-primary)]">
+              <motion.p 
+                className="mono-caption text-[var(--red-primary)]"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+              >
                 Your 2024 Wrapped
-              </p>
-              <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold headline-condensed text-white">
+              </motion.p>
+              <motion.h1 
+                className="text-3xl md:text-4xl lg:text-5xl font-bold headline-condensed text-white"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.1 }}
+              >
                 Share Your Story
-              </h1>
-              <p className="text-lg text-white/60">
+              </motion.h1>
+              <motion.p 
+                className="text-lg text-white/60"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4, delay: 0.2 }}
+              >
                 Download and share your year in review
-              </p>
+              </motion.p>
             </div>
 
             <div className="grid lg:grid-cols-2 gap-6 lg:gap-8 items-center">
@@ -139,14 +189,27 @@ export function FinalPosterSlide() {
                   
                   {/* Download Story Format */}
                   <div className="space-y-2">
-                    <RedButton
-                      onClick={() => handleDownload("story")}
-                      disabled={storyState === "loading"}
-                      className="w-full"
-                      variant="solid"
+                    <motion.div
+                      animate={storyState === "success" ? { scale: [1, 1.02, 1] } : {}}
+                      transition={{ duration: 0.3 }}
                     >
-                      {getButtonText(storyState, "📱 Download Story (9:16)", "✓ Downloaded!")}
-                    </RedButton>
+                      <RedButton
+                        onClick={() => handleDownload("story")}
+                        disabled={storyState === "loading"}
+                        className="w-full relative overflow-hidden"
+                        variant={storyState === "error" ? "outline" : "solid"}
+                      >
+                        {getButtonText(storyState, "📱 Download Story (9:16)", "✓ Downloaded!", "❌ Download Failed")}
+                        {storyState === "success" && (
+                          <motion.div
+                            className="absolute inset-0 bg-green-500/20"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: [0, 1, 0] }}
+                            transition={{ duration: 0.6 }}
+                          />
+                        )}
+                      </RedButton>
+                    </motion.div>
                     <p className="text-xs text-white/40 text-center">
                       1080×1920 • Perfect for Instagram/X stories
                     </p>
@@ -154,18 +217,43 @@ export function FinalPosterSlide() {
 
                   {/* Download Landscape Format */}
                   <div className="space-y-2">
-                    <RedButton
-                      onClick={() => handleDownload("landscape")}
-                      disabled={landscapeState === "loading"}
-                      className="w-full"
-                      variant="solid"
+                    <motion.div
+                      animate={landscapeState === "success" ? { scale: [1, 1.02, 1] } : {}}
+                      transition={{ duration: 0.3 }}
                     >
-                      {getButtonText(landscapeState, "💻 Download Landscape (16:9)", "✓ Downloaded!")}
-                    </RedButton>
+                      <RedButton
+                        onClick={() => handleDownload("landscape")}
+                        disabled={landscapeState === "loading"}
+                        className="w-full relative overflow-hidden"
+                        variant={landscapeState === "error" ? "outline" : "solid"}
+                      >
+                        {getButtonText(landscapeState, "💻 Download Landscape (16:9)", "✓ Downloaded!", "❌ Download Failed")}
+                        {landscapeState === "success" && (
+                          <motion.div
+                            className="absolute inset-0 bg-green-500/20"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: [0, 1, 0] }}
+                            transition={{ duration: 0.6 }}
+                          />
+                        )}
+                      </RedButton>
+                    </motion.div>
                     <p className="text-xs text-white/40 text-center">
                       1600×900 • Perfect for desktop wallpapers
                     </p>
                   </div>
+
+                  {/* Helpful hint */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1, duration: 0.5 }}
+                    className="pt-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10"
+                  >
+                    <p className="text-xs text-white/60 text-center">
+                      💡 <span className="text-white/80">Tip:</span> Best shared on X (Twitter) and Instagram
+                    </p>
+                  </motion.div>
                 </div>
 
                 <div className="h-px bg-white/10" />
@@ -176,24 +264,62 @@ export function FinalPosterSlide() {
                   </h2>
 
                   {/* Copy Share Link */}
-                  <RedButton
-                    onClick={handleCopyLink}
-                    disabled={linkState === "loading"}
-                    className="w-full"
-                    variant="outline"
+                  <motion.div
+                    animate={linkState === "success" ? { scale: [1, 1.02, 1] } : {}}
+                    transition={{ duration: 0.3 }}
                   >
-                    {getButtonText(linkState, "🔗 Copy Share Link", "✓ Copied to Clipboard!")}
-                  </RedButton>
+                    <RedButton
+                      onClick={handleCopyLink}
+                      disabled={linkState === "loading"}
+                      className="w-full relative overflow-hidden"
+                      variant="outline"
+                    >
+                      {getButtonText(linkState, "🔗 Copy Share Link", "✓ Copied to Clipboard!", "❌ Copy Failed")}
+                      {linkState === "success" && (
+                        <motion.div
+                          className="absolute inset-0 bg-green-500/20"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: [0, 1, 0] }}
+                          transition={{ duration: 0.6 }}
+                        />
+                      )}
+                    </RedButton>
+                  </motion.div>
 
                   {/* Copy Caption */}
-                  <RedButton
-                    onClick={handleCopyCaption}
-                    disabled={captionState === "loading"}
-                    className="w-full"
-                    variant="outline"
+                  <motion.div
+                    animate={captionState === "success" ? { scale: [1, 1.02, 1] } : {}}
+                    transition={{ duration: 0.3 }}
                   >
-                    {getButtonText(captionState, "📝 Copy Caption", "✓ Copied to Clipboard!")}
-                  </RedButton>
+                    <RedButton
+                      onClick={handleCopyCaption}
+                      disabled={captionState === "loading"}
+                      className="w-full relative overflow-hidden"
+                      variant="outline"
+                    >
+                      {getButtonText(captionState, "📝 Copy Caption", "✓ Copied to Clipboard!", "❌ Copy Failed")}
+                      {captionState === "success" && (
+                        <motion.div
+                          className="absolute inset-0 bg-green-500/20"
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: [0, 1, 0] }}
+                          transition={{ duration: 0.6 }}
+                        />
+                      )}
+                    </RedButton>
+                  </motion.div>
+
+                  {/* Share hint */}
+                  <motion.div
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 1.2, duration: 0.5 }}
+                    className="pt-2 px-3 py-2 rounded-lg bg-white/5 border border-white/10"
+                  >
+                    <p className="text-xs text-white/60 text-center">
+                      🌐 <span className="text-white/80">Share link shows a beautiful demo</span>
+                    </p>
+                  </motion.div>
                 </div>
 
                 {/* Footer note */}

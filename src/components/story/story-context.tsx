@@ -13,6 +13,7 @@ export interface StoryContextValue {
   isPaused: boolean;
   togglePause: () => void;
   direction: NavigationDirection;
+  reducedMotion: boolean;
 }
 
 export const StoryContext = createContext<StoryContextValue | null>(null);

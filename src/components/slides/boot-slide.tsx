@@ -36,7 +36,11 @@ export function BootSlide() {
     <div className="relative h-full w-full overflow-hidden">
       <Silk color="#FF0033" speed={3} scale={1.2} noiseIntensity={1.2} />
       
-      <div className="relative z-10 h-full flex flex-col items-center justify-center px-8">
+      <div 
+        className="relative z-10 h-full flex flex-col items-center justify-center px-8"
+        role="region"
+        aria-label="Boot sequence"
+      >
         <motion.div
           className="text-center space-y-8 max-w-2xl"
           variants={containerVariants}

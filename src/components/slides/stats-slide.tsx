@@ -39,7 +39,11 @@ export function StatsSlide() {
     <div className="relative h-full w-full overflow-hidden">
       <Aurora colorStops={["#FF0033", "#990000", "#FF0033"]} amplitude={1.2} blend={0.6} speed={0.8} />
       
-      <div className="relative z-10 h-full flex flex-col items-center justify-center px-6 py-12">
+      <div 
+        className="relative z-10 h-full flex flex-col items-center justify-center px-6 py-12"
+        role="region"
+        aria-label="Year at a glance statistics"
+      >
         <div className="w-full max-w-5xl space-y-8">
           {/* Header */}
           <motion.div

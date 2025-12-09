@@ -38,7 +38,11 @@ export function IdentitySlide() {
     <div className="relative h-full w-full overflow-hidden">
       <LightPillars />
       
-      <div className="relative z-10 h-full flex flex-col items-center justify-center px-8">
+      <div 
+        className="relative z-10 h-full flex flex-col items-center justify-center px-8"
+        role="region"
+        aria-label="Your identity and persona"
+      >
         <motion.div
           className="text-center space-y-8 max-w-4xl"
           variants={containerVariants}

@@ -33,11 +33,17 @@ export async function copyToClipboard(text: string): Promise<boolean> {
 
 /**
  * Generate shareable link for wrapped data
- * @param handle - User handle
- * @returns Mock share URL
+ * @param handle - User handle (optional, used for URL friendliness)
+ * @returns Share URL (all links show demo data)
  */
-export function generateShareLink(handle: string): string {
-  const slug = `${new Date().getFullYear()}-${handle}-${Math.random().toString(36).substring(2, 9)}`;
+export function generateShareLink(handle?: string): string {
+  // Generate a simple, clean slug
+  const randomId = Math.random().toString(36).substring(2, 9);
+  const year = new Date().getFullYear();
+  const slug = handle 
+    ? `${year}-wrapped-${handle}-${randomId}`
+    : `${year}-wrapped-demo-${randomId}`;
+  
   return `${window.location.origin}/share/${slug}`;
 }
 
