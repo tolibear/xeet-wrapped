@@ -18,3 +18,4 @@ export interface SlideProps {
   isActive: boolean;
   direction: NavigationDirection;
 }
+

@@ -62,3 +62,4 @@ export function XeetCard({ xeet, className }: XeetCardProps) {
     </GlassPanel>
   );
 }
+

@@ -70,3 +70,4 @@ export function LightPillars({ className }: LightPillarsProps) {
     </div>
   );
 }
+

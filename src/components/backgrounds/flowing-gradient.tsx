@@ -54,3 +54,4 @@ export function FlowingGradient({ className }: FlowingGradientProps) {
     </div>
   );
 }
+

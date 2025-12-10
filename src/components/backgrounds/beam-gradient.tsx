@@ -58,3 +58,4 @@ export function BeamGradient({ className }: BeamGradientProps) {
     </div>
   );
 }
+

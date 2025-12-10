@@ -83,3 +83,4 @@ export function MomentumGradient({ className }: MomentumGradientProps) {
     </div>
   );
 }
+

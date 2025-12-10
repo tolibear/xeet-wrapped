@@ -34,7 +34,7 @@ export const LazySilk = dynamic<{ speed?: number; scale?: number; color?: string
   }
 );
 
-export const LazyAurora = dynamic<{ colorStops?: string[]; amplitude?: number; blend?: number; speed?: number; className?: string }>(
+export const LazyAurora = dynamic<{ colorStops?: [string, string, string]; amplitude?: number; blend?: number; speed?: number; className?: string }>(
   () => import("./react-bits/aurora").then((mod) => mod.Aurora),
   {
     loading: () => <LoadingFallback />,
@@ -42,7 +42,7 @@ export const LazyAurora = dynamic<{ colorStops?: string[]; amplitude?: number; b
   }
 );
 
-export const LazyPlasma = dynamic<{ color?: number[]; opacity?: number; speed?: number; className?: string }>(
+export const LazyPlasma = dynamic<{ color?: string; speed?: number; direction?: "forward" | "reverse" | "pingpong"; scale?: number; opacity?: number; mouseInteractive?: boolean; className?: string }>(
   () => import("./react-bits/plasma").then((mod) => mod.Plasma),
   {
     loading: () => <LoadingFallback />,
@@ -58,7 +58,7 @@ export const LazyBeams = dynamic<{ lightColor?: string; className?: string }>(
   }
 );
 
-export const LazyIridescence = dynamic<{ color?: number[]; speed?: number; className?: string }>(
+export const LazyIridescence = dynamic<{ color?: [number, number, number]; speed?: number; amplitude?: number; mouseReact?: boolean; className?: string }>(
   () => import("./react-bits/iridescence").then((mod) => mod.Iridescence),
   {
     loading: () => <LoadingFallback />,
@@ -78,7 +78,7 @@ export function SmartSilk(props: SilkProps) {
   return <LazySilk {...props} />;
 }
 
-type AuroraProps = { colorStops?: string[]; amplitude?: number; blend?: number; speed?: number; className?: string };
+type AuroraProps = { colorStops?: [string, string, string]; amplitude?: number; blend?: number; speed?: number; className?: string };
 export function SmartAurora(props: AuroraProps) {
   const { isMobile } = useMobile();
   
@@ -89,12 +89,12 @@ export function SmartAurora(props: AuroraProps) {
   return <LazyAurora {...props} />;
 }
 
-type PlasmaProps = { color?: number[]; opacity?: number; speed?: number; className?: string };
+type PlasmaProps = { color?: string; speed?: number; direction?: "forward" | "reverse" | "pingpong"; scale?: number; opacity?: number; mouseInteractive?: boolean; className?: string };
 export function SmartPlasma(props: PlasmaProps) {
   const { isMobile } = useMobile();
   
   if (isMobile) {
-    return <PlasmaFallback color="#FF0033" className={props.className} />;
+    return <PlasmaFallback color={props.color || "#FF0033"} className={props.className} />;
   }
   
   return <LazyPlasma {...props} />;
@@ -111,7 +111,7 @@ export function SmartBeams(props: BeamsProps) {
   return <LazyBeams {...props} />;
 }
 
-type IridescenceProps = { color?: number[]; speed?: number; className?: string };
+type IridescenceProps = { color?: [number, number, number]; speed?: number; amplitude?: number; mouseReact?: boolean; className?: string };
 export function SmartIridescence(props: IridescenceProps) {
   const { isMobile } = useMobile();
   

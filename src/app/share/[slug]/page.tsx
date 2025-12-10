@@ -12,15 +12,15 @@ import {
   AchievementsSlide,
 } from "@/components/slides";
 import { ShareFinalSlide } from "@/components/slides/share-final-slide";
-import { PERSONA_BUILDER } from "@/lib/mock-data/personas";
+import { PERSONA_ELON } from "@/lib/mock-data/personas";
 
 export default async function SharePage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  // All shared links display the same high-quality demo persona
-  const wrappedData = PERSONA_BUILDER;
+  // All shared links display the Elon Musk persona
+  const wrappedData = PERSONA_ELON;
   
   // Await params as required by Next.js
   await params;

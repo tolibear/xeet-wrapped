@@ -40,3 +40,4 @@ export function GradientPulse({ className }: GradientPulseProps) {
     </div>
   );
 }
+

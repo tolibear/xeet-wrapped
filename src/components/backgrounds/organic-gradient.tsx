@@ -52,3 +52,4 @@ export function OrganicGradient({ className }: OrganicGradientProps) {
     </div>
   );
 }
+

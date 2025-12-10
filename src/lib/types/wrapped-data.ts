@@ -93,6 +93,17 @@ export interface Achievement {
   rarity?: "common" | "rare" | "legendary";
 }
 
+export interface TerminalData {
+  warnings: Array<{
+    code: string;
+    message: string;
+    severity: "info" | "warn" | "critical";
+  }>;
+  funniestReply?: Xeet;
+  mostHeatedDay?: { date: string; reason: string };
+  lateNightHour?: { hour: number; count: number };
+}
+
 export interface XeetWrappedData {
   user: User;
   identity: Identity;
@@ -107,5 +118,7 @@ export interface XeetWrappedData {
   projects: Project[];
   friends: Friends;
   achievements: Achievement[];
+  terminal?: TerminalData;
   era?: string; // e.g., "The Builder Era", "Chaos Agent"
 }
+

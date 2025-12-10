@@ -7,10 +7,10 @@ import { cn } from "@/lib/utils/cn";
 
 export function TerminalSlide() {
   const { wrappedData } = useStory();
-  const { user, stats, era } = wrappedData;
+  const { user, stats, era, terminal } = wrappedData;
 
-  // Generate terminal logs
-  const logs = [
+  // Build terminal logs dynamically
+  const logs: Array<{ type: string; text: string }> = [
     { type: "system", text: "SYSTEM DIAGNOSTICS INITIALIZED..." },
     { type: "info", text: `> Loading profile: @${user.handle}` },
     { type: "success", text: `✓ Profile loaded successfully` },
@@ -20,18 +20,61 @@ export function TerminalSlide() {
     { type: "data", text: `  └─ Threads created: ${stats.threads.toLocaleString()}` },
     { type: "data", text: `  └─ Days active: ${stats.daysActive}/${365}` },
     { type: "success", text: `✓ Analysis complete` },
-    { type: "info", text: `> Computing engagement metrics...` },
-    { type: "data", text: `  └─ Longest streak: ${stats.longestStreak} days` },
-    { type: "data", text: `  └─ Media posts: ${stats.mediaPosts.toLocaleString()}` },
-    { type: "success", text: `✓ Metrics computed` },
-    { type: "warning", text: `⚠ WARNING: Excessive vibes detected` },
-    { type: "warning", text: `⚠ NOTICE: Above-average community engagement` },
-    { type: "info", text: `> Generating era classification...` },
-    { type: "era", text: era || "The Active Era" },
-    { type: "success", text: `✓ Classification complete` },
-    { type: "system", text: "═══════════════════════════════" },
-    { type: "system", text: "DIAGNOSTICS COMPLETE • 2024" },
   ];
+
+  // Add terminal warnings if available
+  if (terminal?.warnings && terminal.warnings.length > 0) {
+    logs.push({ type: "info", text: `> Running diagnostic checks...` });
+    terminal.warnings.forEach((warning) => {
+      const warningType = warning.severity === "critical" ? "error" : warning.severity === "warn" ? "warning" : "info";
+      logs.push({ 
+        type: warningType, 
+        text: warning.message 
+      });
+    });
+    logs.push({ type: "success", text: `✓ Diagnostics complete` });
+  }
+
+  // Add most heated day if available
+  if (terminal?.mostHeatedDay) {
+    logs.push({ type: "info", text: `> Analyzing controversial moments...` });
+    logs.push({ 
+      type: "warning", 
+      text: `📅 Most Heated Day: ${terminal.mostHeatedDay.date}` 
+    });
+    logs.push({ 
+      type: "data", 
+      text: `   ${terminal.mostHeatedDay.reason}` 
+    });
+  }
+
+  // Add late night activity if available
+  if (terminal?.lateNightHour) {
+    logs.push({ 
+      type: "info", 
+      text: `> Peak activity hour: ${terminal.lateNightHour.hour}:00 AM (${terminal.lateNightHour.count} posts)` 
+    });
+  }
+
+  // Add funniest reply if available
+  if (terminal?.funniestReply) {
+    logs.push({ type: "info", text: `> Extracting comedy gold...` });
+    logs.push({ 
+      type: "data", 
+      text: `   "${terminal.funniestReply.content.substring(0, 80)}${terminal.funniestReply.content.length > 80 ? '...' : ''}"` 
+    });
+    logs.push({ 
+      type: "success", 
+      text: `   ${terminal.funniestReply.likes.toLocaleString()} likes • Comedy certified` 
+    });
+  }
+
+  // Add era classification
+  logs.push({ type: "info", text: `> Generating era classification...` });
+  logs.push({ type: "era", text: era || "The Active Era" });
+  logs.push({ type: "success", text: `✓ Classification complete` });
+  logs.push({ type: "system", text: "═══════════════════════════════" });
+  logs.push({ type: "system", text: "DIAGNOSTICS COMPLETE • 2024" });
 
   const getLogColor = (type: string) => {
     switch (type) {
@@ -150,3 +193,4 @@ export function TerminalSlide() {
     </div>
   );
 }
+

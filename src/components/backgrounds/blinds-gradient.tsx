@@ -63,3 +63,4 @@ export function BlindsGradient({ className }: BlindsGradientProps) {
     </div>
   );
 }
+

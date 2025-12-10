@@ -68,3 +68,4 @@ export function WarmGradient({ className }: WarmGradientProps) {
     </div>
   );
 }
+

@@ -88,3 +88,4 @@ export function ProjectCard({ project, className }: ProjectCardProps) {
     </GlassPanel>
   );
 }
+

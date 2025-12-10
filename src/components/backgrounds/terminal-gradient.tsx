@@ -59,3 +59,4 @@ export function TerminalGradient({ className }: TerminalGradientProps) {
     </div>
   );
 }
+
