@@ -206,6 +206,15 @@ body::before {
   animation: crt-flicker 0.1s ease-in-out infinite;
 }
 
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+.animate-blink {
+  animation: blink 1s step-end infinite;
+}
+
 /* Curtain reveal */
 @keyframes curtain-open {
   0% { clip-path: inset(0 50% 0 50%); }
