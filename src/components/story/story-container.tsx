@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { StoryProvider } from "./story-context";
 import { ProgressRail } from "./progress-rail";
 import { StoryAnnouncer } from "./story-announcer";
-import { DesktopHint, MotionToggle } from "@/components/ui";
+import { DesktopHint, MotionToggle, UserBubble, XeetLogo, ShareModal } from "@/components/ui";
 import { useMobile } from "@/lib/hooks/use-mobile";
 import type { XeetWrappedData, NavigationDirection } from "@/lib/types";
 
@@ -247,6 +247,19 @@ export function StoryContainer({
     <StoryProvider value={contextValue}>
       <div className="fixed inset-0 bg-background overflow-hidden">
         <ProgressRail />
+        
+        {/* Global UI Components - visible on all slides except first (terminal) */}
+        {currentSlide > 0 && (
+          <>
+            <UserBubble
+              avatar={wrappedData.user.avatar}
+              handle={wrappedData.user.handle}
+              displayName={wrappedData.user.displayName}
+            />
+            <XeetLogo size="md" />
+            <ShareModal />
+          </>
+        )}
         
         <motion.div
           className="h-screen w-screen cursor-pointer"

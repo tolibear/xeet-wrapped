@@ -3,24 +3,23 @@
 import { motion } from "framer-motion";
 import type { DataPoint } from "@/lib/types";
 
-type TimelineChartProps = {
+type Dataset = {
   data: DataPoint[];
-  color?: string;
+  color: string;
+  label: string;
+};
+
+type TimelineChartProps = {
+  datasets: Dataset[];
   showPeak?: boolean;
 };
 
 export function TimelineChart({ 
-  data, 
-  color = "var(--red-primary)",
+  datasets,
   showPeak = true,
 }: TimelineChartProps) {
-  if (data.length === 0) return null;
+  if (datasets.length === 0 || datasets[0].data.length === 0) return null;
 
-  const values = data.map(d => d.value);
-  const maxValue = Math.max(...values);
-  const minValue = Math.min(...values);
-  const range = maxValue - minValue || 1;
-  
   // Chart dimensions
   const width = 100;
   const height = 50;
@@ -28,24 +27,39 @@ export function TimelineChart({
   const chartWidth = width - padding.left - padding.right;
   const chartHeight = height - padding.top - padding.bottom;
   
-  // Calculate points
-  const points = data.map((d, i) => {
-    const x = padding.left + (i / (data.length - 1)) * chartWidth;
-    const y = padding.top + chartHeight - ((d.value - minValue) / range) * chartHeight;
-    return { x, y, value: d.value, label: d.label };
+  // Calculate points for each dataset independently (separate Y-axis scales)
+  const datasetsWithPoints = datasets.map((dataset, dsIndex) => {
+    // Each dataset gets its own min/max for independent scaling
+    const values = dataset.data.map(d => d.value);
+    const maxValue = Math.max(...values);
+    const minValue = Math.min(...values);
+    const range = maxValue - minValue || 1;
+    
+    const points = dataset.data.map((d, i) => {
+      const x = padding.left + (i / (dataset.data.length - 1)) * chartWidth;
+      const y = padding.top + chartHeight - ((d.value - minValue) / range) * chartHeight;
+      return { x, y, value: d.value, label: d.label };
+    });
+    
+    const pathD = points
+      .map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`)
+      .join(" ");
+    
+    const peakValue = Math.max(...values);
+    const peakIndex = values.indexOf(peakValue);
+    const peakPoint = points[peakIndex];
+    
+    return {
+      ...dataset,
+      points,
+      pathD,
+      peakPoint,
+      dsIndex,
+    };
   });
-  
-  // Create path
-  const pathD = points
-    .map((p, i) => `${i === 0 ? "M" : "L"} ${p.x} ${p.y}`)
-    .join(" ");
-  
-  // Find peak point
-  const peakIndex = values.indexOf(maxValue);
-  const peakPoint = points[peakIndex];
-  
-  // Create area fill path
-  const areaD = `${pathD} L ${points[points.length - 1].x} ${height - padding.bottom} L ${padding.left} ${height - padding.bottom} Z`;
+
+  // Use first dataset's labels for x-axis
+  const labelPoints = datasetsWithPoints[0].points;
 
   return (
     <div className="w-full">
@@ -54,82 +68,80 @@ export function TimelineChart({
         className="w-full h-auto"
         preserveAspectRatio="xMidYMid meet"
       >
-        {/* Gradient definition */}
+        {/* Gradient definitions for each line */}
         <defs>
-          <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor={color} stopOpacity="0.5" />
-            <stop offset="50%" stopColor={color} stopOpacity="1" />
-            <stop offset="100%" stopColor={color} stopOpacity="0.5" />
-          </linearGradient>
-          <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-            <stop offset="0%" stopColor={color} stopOpacity="0.3" />
-            <stop offset="100%" stopColor={color} stopOpacity="0" />
-          </linearGradient>
+          {datasetsWithPoints.map((dataset) => (
+            <linearGradient 
+              key={`lineGradient-${dataset.dsIndex}`}
+              id={`lineGradient-${dataset.dsIndex}`} 
+              x1="0%" y1="0%" x2="100%" y2="0%"
+            >
+              <stop offset="0%" stopColor={dataset.color} stopOpacity="0.5" />
+              <stop offset="50%" stopColor={dataset.color} stopOpacity="1" />
+              <stop offset="100%" stopColor={dataset.color} stopOpacity="0.5" />
+            </linearGradient>
+          ))}
         </defs>
         
-        {/* Area fill */}
-        <motion.path
-          d={areaD}
-          fill="url(#areaGradient)"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5, delay: 1 }}
-        />
-        
-        {/* Main line */}
-        <motion.path
-          d={pathD}
-          fill="none"
-          stroke="url(#lineGradient)"
-          strokeWidth="0.8"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          initial={{ pathLength: 0, opacity: 0 }}
-          animate={{ pathLength: 1, opacity: 1 }}
-          transition={{ duration: 1.5, ease: "easeInOut" }}
-        />
-        
-        {/* Data points */}
-        {points.map((point, i) => (
-          <motion.circle
-            key={i}
-            cx={point.x}
-            cy={point.y}
-            r="1"
-            fill={color}
-            initial={{ scale: 0, opacity: 0 }}
-            animate={{ scale: 1, opacity: 0.6 }}
-            transition={{ delay: 1.5 + i * 0.05, duration: 0.2 }}
-          />
+        {/* Render each line */}
+        {datasetsWithPoints.map((dataset) => (
+          <g key={`line-${dataset.dsIndex}`}>
+            {/* Main line */}
+            <motion.path
+              d={dataset.pathD}
+              fill="none"
+              stroke={`url(#lineGradient-${dataset.dsIndex})`}
+              strokeWidth="0.8"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              initial={{ pathLength: 0, opacity: 0 }}
+              animate={{ pathLength: 1, opacity: 1 }}
+              transition={{ duration: 1.5, ease: "easeInOut", delay: dataset.dsIndex * 0.2 }}
+            />
+            
+            {/* Data points */}
+            {dataset.points.map((point, i) => (
+              <motion.circle
+                key={`point-${dataset.dsIndex}-${i}`}
+                cx={point.x}
+                cy={point.y}
+                r="0.8"
+                fill={dataset.color}
+                initial={{ scale: 0, opacity: 0 }}
+                animate={{ scale: 1, opacity: 0.7 }}
+                transition={{ delay: 1.5 + dataset.dsIndex * 0.2 + i * 0.05, duration: 0.2 }}
+              />
+            ))}
+            
+            {/* Peak indicator */}
+            {showPeak && dataset.peakPoint && (
+              <motion.g
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 2 + dataset.dsIndex * 0.1, duration: 0.3 }}
+              >
+                <circle
+                  cx={dataset.peakPoint.x}
+                  cy={dataset.peakPoint.y}
+                  r="1.5"
+                  fill={dataset.color}
+                />
+                <circle
+                  cx={dataset.peakPoint.x}
+                  cy={dataset.peakPoint.y}
+                  r="2.5"
+                  fill="none"
+                  stroke={dataset.color}
+                  strokeWidth="0.3"
+                  opacity="0.5"
+                />
+              </motion.g>
+            )}
+          </g>
         ))}
         
-        {/* Peak indicator */}
-        {showPeak && peakPoint && (
-          <motion.g
-            initial={{ opacity: 0, scale: 0 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 2, duration: 0.3 }}
-          >
-            <circle
-              cx={peakPoint.x}
-              cy={peakPoint.y}
-              r="2"
-              fill={color}
-            />
-            <circle
-              cx={peakPoint.x}
-              cy={peakPoint.y}
-              r="3"
-              fill="none"
-              stroke={color}
-              strokeWidth="0.3"
-              opacity="0.5"
-            />
-          </motion.g>
-        )}
-        
         {/* Month labels */}
-        {points.filter((_, i) => i % 2 === 0 || i === points.length - 1).map((point, i) => (
+        {labelPoints.filter((_, i) => i % 2 === 0 || i === labelPoints.length - 1).map((point, i) => (
           <motion.text
             key={i}
             x={point.x}

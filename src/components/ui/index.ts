@@ -37,3 +37,12 @@ export type { PosterPreviewProps } from "./poster-preview";
 export { DesktopHint } from "./desktop-hint";
 
 export { MotionToggle } from "./motion-toggle";
+
+export { UserBubble } from "./user-bubble";
+export type { UserBubbleProps } from "./user-bubble";
+
+export { XeetLogo } from "./xeet-logo";
+export type { XeetLogoProps } from "./xeet-logo";
+
+export { ShareModal } from "./share-modal";
+export type { ShareModalProps } from "./share-modal";

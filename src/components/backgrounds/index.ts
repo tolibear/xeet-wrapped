@@ -8,6 +8,7 @@ export { BlindsGradient } from "./blinds-gradient";
 export { MomentumGradient } from "./momentum-gradient";
 export { WarmGradient } from "./warm-gradient";
 export { TerminalGradient } from "./terminal-gradient";
+export { LetterGlitch } from "./letter-glitch";
 
 // React Bits WebGL backgrounds
 export { Silk, Aurora, Plasma, Beams, Iridescence } from "./react-bits";

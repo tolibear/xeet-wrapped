@@ -144,21 +144,37 @@ export function TerminalSlide() {
               )}
             >
               <div className="space-y-1 font-mono text-sm">
-                {logs.map((log, index) => (
-                  <motion.div
-                    key={index}
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{
-                      duration: 0.3,
-                      delay: index * 0.1,
-                      ease: "easeOut",
-                    }}
-                    className={cn(getLogColor(log.type))}
-                  >
-                    {log.text}
-                  </motion.div>
-                ))}
+                {logs.map((log, index) => {
+                  // Add strategic pauses (thinking delays)
+                  let baseDelay = index * 0.18; // Slower base delay
+                  
+                  // Add longer pauses at strategic points
+                  if (log.type === "info" && log.text.includes("Analyzing")) {
+                    baseDelay += 0.8; // Pause before analysis
+                  } else if (log.type === "success") {
+                    baseDelay += 0.5; // Pause after success messages
+                  } else if (log.text.includes("Peak activity hour")) {
+                    baseDelay += 0.6; // Pause before late night activity
+                  } else if (log.text.includes("comedy gold")) {
+                    baseDelay += 0.7; // Pause before funniest reply
+                  }
+                  
+                  return (
+                    <motion.div
+                      key={index}
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{
+                        duration: 0.4,
+                        delay: baseDelay,
+                        ease: "easeOut",
+                      }}
+                      className={cn(getLogColor(log.type))}
+                    >
+                      {log.text}
+                    </motion.div>
+                  );
+                })}
 
                 {/* Blinking cursor */}
                 <motion.div
@@ -178,12 +194,12 @@ export function TerminalSlide() {
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: logs.length * 0.1 + 0.5 }}
+              transition={{ duration: 0.5, delay: logs.length * 0.18 + 1.0 }}
               className="mt-6 text-center"
             >
               <div className="inline-block px-6 py-2 bg-red-500/20 border border-red-500/50 rounded-lg transform -rotate-2">
                 <div className="font-bold text-red-400 text-lg mono-caption">
-                  APPROVED • YEAR COMPLETE
+                  BEGIN XEET WRAPPED
                 </div>
               </div>
             </motion.div>
