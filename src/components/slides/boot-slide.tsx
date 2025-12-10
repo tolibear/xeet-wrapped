@@ -6,29 +6,57 @@ import { Silk } from "@/components/backgrounds";
 
 export function BootSlide() {
   const { wrappedData } = useStory();
+  const { user, stats, timeline } = wrappedData;
+
+  // Find the most active month
+  const mostActiveMonth = timeline.activity.reduce((max, month) => 
+    month.value > max.value ? month : max
+  );
+
+  // Get personalized intro based on activity
+  const getPersonalizedIntro = () => {
+    if (stats.totalXeets > 4000) {
+      return "You didn't just show up on X this year.";
+    } else if (stats.totalXeets > 2000) {
+      return "2024 was your year on X.";
+    } else if (stats.totalXeets > 500) {
+      return "You made your mark on X this year.";
+    }
+    return "You showed up on X this year.";
+  };
+
+  const getPersonalizedSubtext = () => {
+    if (stats.daysActive > 300) {
+      return `${stats.daysActive} days active, ${stats.totalXeets.toLocaleString()} posts, and a whole lot of ${mostActiveMonth.label} energy.`;
+    } else if (stats.totalXeets > 3000) {
+      return `${stats.totalXeets.toLocaleString()} posts across ${stats.daysActive} days. You had a lot to say.`;
+    }
+    return `${stats.totalXeets.toLocaleString()} posts, ${stats.replies.toLocaleString()} replies, and ${stats.threads} threads later...`;
+  };
 
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: { staggerChildren: 0.4, delayChildren: 0.2 },
+      transition: { staggerChildren: 0.5, delayChildren: 0.3 },
     },
   };
 
   const textVariants = {
-    hidden: { opacity: 0, y: 20 },
+    hidden: { opacity: 0, y: 30 },
     visible: { 
       opacity: 1, 
       y: 0,
+      transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
     },
   };
 
   const handleVariants = {
-    hidden: { opacity: 0, filter: "blur(20px)", scale: 0.9 },
+    hidden: { opacity: 0, scale: 0.95 },
     visible: { 
       opacity: 1, 
-      filter: "blur(0px)", 
       scale: 1,
+      transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] }
     },
   };
 
@@ -39,82 +67,56 @@ export function BootSlide() {
       <div 
         className="relative z-10 h-full flex flex-col items-center justify-center px-8"
         role="region"
-        aria-label="Boot sequence"
+        aria-label="Your year intro"
       >
         <motion.div
-          className="text-center space-y-8 max-w-2xl"
+          className="text-center space-y-10 max-w-3xl"
           variants={containerVariants}
           initial="hidden"
           animate="visible"
         >
-          {/* Loading text */}
-          <motion.div 
-            variants={textVariants} 
-            transition={{ duration: 0.6 }}
-            className="space-y-2"
-          >
-            <p className="mono-caption text-white/50">initializing</p>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold headline-condensed text-white">
-              Compiling your year...
-            </h1>
-          </motion.div>
-          
-          {/* Animated progress bar */}
+          {/* Greeting */}
           <motion.div 
             variants={textVariants}
-            transition={{ duration: 0.6 }}
-            className="w-full max-w-md mx-auto"
+            className="space-y-3"
           >
-            <div className="h-1 bg-white/10 rounded-full overflow-hidden">
-              <motion.div
-                className="h-full rounded-full"
-                style={{
-                  background: "linear-gradient(90deg, var(--red-primary), var(--red-secondary))",
-                }}
-                initial={{ width: "0%" }}
-                animate={{ width: "100%" }}
-                transition={{ duration: 2, delay: 1, ease: "easeInOut" }}
-              />
-            </div>
-            <motion.div 
-              className="mt-3 flex justify-between text-xs mono-caption text-white/40"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 1.2 }}
-            >
-              <span>Scanning timeline</span>
-              <motion.span
-                initial={{ opacity: 0 }}
-                animate={{ opacity: [0, 1, 0, 1, 0, 1] }}
-                transition={{ duration: 1.5, delay: 1.5 }}
-              >
-                ████████
-              </motion.span>
-            </motion.div>
+            <p className="mono-caption text-[var(--red-primary)] tracking-wider">
+              HEY @{user.handle.toUpperCase()}
+            </p>
           </motion.div>
           
-          {/* Handle reveal */}
+          {/* Main headline */}
+          <motion.div
+            variants={textVariants}
+            className="space-y-6"
+          >
+            <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold headline-condensed text-white leading-tight">
+              {getPersonalizedIntro()}
+            </h1>
+            <p className="text-lg md:text-xl lg:text-2xl text-white/70 leading-relaxed max-w-2xl mx-auto">
+              {getPersonalizedSubtext()}
+            </p>
+          </motion.div>
+          
+          {/* Call to action */}
           <motion.div
             variants={handleVariants}
-            transition={{ duration: 1, delay: 2.5 }}
             className="pt-8"
           >
-            <p className="mono-caption text-white/40 mb-2">analyzing</p>
-            <div className="text-5xl md:text-6xl lg:text-7xl font-bold headline-condensed">
-              <span className="text-[var(--red-primary)]">@</span>
-              <span className="text-white">{wrappedData.user.handle}</span>
-            </div>
+            <p className="text-lg md:text-xl text-white/50 font-medium">
+              Let's take a look back.
+            </p>
           </motion.div>
           
-          {/* Year tag */}
+          {/* Year badge */}
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 3.2, duration: 0.5 }}
-            className="pt-4"
+            transition={{ delay: 2.2, duration: 0.6 }}
+            className="pt-6"
           >
-            <span className="inline-block px-4 py-2 rounded-full bg-white/5 border border-white/10 mono-caption text-white/60">
-              2024 Wrapped
+            <span className="inline-block px-6 py-3 rounded-full bg-white/5 border border-white/10 mono-caption text-white/60 text-sm">
+              YOUR 2024 WRAPPED
             </span>
           </motion.div>
         </motion.div>

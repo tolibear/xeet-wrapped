@@ -10,7 +10,6 @@ export { TimelineChart } from "./timeline-chart";
 // Real slide implementations (Phase 4)
 export { MomentsSlide } from "./moments-slide";
 export { TopicsSlide } from "./topics-slide";
-export { ProjectsSlide } from "./projects-slide";
 export { FriendsSlide } from "./friends-slide";
 
 // Real slide implementations (Phase 5)

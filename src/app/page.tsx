@@ -8,7 +8,6 @@ import {
   StatsSlide,
   TimelineSlide,
   MomentsSlide,
-  ProjectsSlide,
   FriendsSlide,
   FinalPosterSlide,
 } from "@/components/slides";
@@ -87,9 +86,8 @@ export default function HomePage() {
     <StatsSlide key="slide-2" />,
     <TimelineSlide key="slide-3" />,
     <MomentsSlide key="slide-4" />,
-    <ProjectsSlide key="slide-5" />,
-    <FriendsSlide key="slide-6" />,
-    <FinalPosterSlide key="slide-7" />,
+    <FriendsSlide key="slide-5" />,
+    <FinalPosterSlide key="slide-6" />,
   ];
 
   return (
