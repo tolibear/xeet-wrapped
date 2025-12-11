@@ -60,3 +60,4 @@ export function TerminalGradient({ className }: TerminalGradientProps) {
   );
 }
 
+

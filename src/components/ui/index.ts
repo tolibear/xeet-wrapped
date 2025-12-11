@@ -46,3 +46,6 @@ export type { XeetLogoProps } from "./xeet-logo";
 
 export { ShareModal } from "./share-modal";
 export type { ShareModalProps } from "./share-modal";
+
+export { MuteButton } from "./mute-button";
+export type { MuteButtonProps } from "./mute-button";

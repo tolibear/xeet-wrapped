@@ -17,8 +17,10 @@ import { PERSONA_ELON } from "@/lib/mock-data/personas";
 export default function HomePage() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [musicStarted, setMusicStarted] = useState(false);
+  const [isMuted, setIsMuted] = useState(false);
   const wrappedData = PERSONA_ELON;
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const previousVolumeRef = useRef<number>(0.5); // Store previous volume for unmuting
 
   const handleSignIn = () => {
     setIsAuthenticated(true);
@@ -53,8 +55,28 @@ export default function HomePage() {
         }
         if (audioRef.current) {
           audioRef.current.volume = currentVolume;
+          previousVolumeRef.current = currentVolume;
         }
       }, intervalTime);
+    }
+  };
+
+  const toggleMute = () => {
+    if (!audioRef.current) return;
+    
+    if (isMuted) {
+      // Unmute: restore previous volume (or default to 0.5 if somehow 0)
+      const volumeToRestore = previousVolumeRef.current > 0 ? previousVolumeRef.current : 0.5;
+      audioRef.current.volume = volumeToRestore;
+      setIsMuted(false);
+    } else {
+      // Mute: save current volume (if > 0) and set to 0
+      const currentVolume = audioRef.current.volume;
+      if (currentVolume > 0) {
+        previousVolumeRef.current = currentVolume;
+      }
+      audioRef.current.volume = 0;
+      setIsMuted(true);
     }
   };
 
@@ -75,6 +97,8 @@ export default function HomePage() {
         onSignIn={handleSignIn} 
         username={wrappedData.user.handle}
         onMusicStart={startMusic}
+        isMuted={isMuted}
+        onToggleMute={toggleMute}
       />
     );
   }
@@ -96,6 +120,8 @@ export default function HomePage() {
       slides={slides}
       autoAdvance={false}
       autoAdvanceDuration={5}
+      isMuted={isMuted}
+      onToggleMute={toggleMute}
     />
   );
 }

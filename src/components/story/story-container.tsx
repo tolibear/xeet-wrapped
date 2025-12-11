@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { StoryProvider } from "./story-context";
 import { ProgressRail } from "./progress-rail";
 import { StoryAnnouncer } from "./story-announcer";
-import { DesktopHint, MotionToggle, UserBubble, XeetLogo, ShareModal } from "@/components/ui";
+import { DesktopHint, MotionToggle, UserBubble, XeetLogo, ShareModal, MuteButton } from "@/components/ui";
 import { useMobile } from "@/lib/hooks/use-mobile";
 import type { XeetWrappedData, NavigationDirection } from "@/lib/types";
 
@@ -15,6 +15,8 @@ interface StoryContainerProps {
   slides: ReactNode[];
   autoAdvance?: boolean;
   autoAdvanceDuration?: number; // in seconds
+  isMuted?: boolean;
+  onToggleMute?: () => void;
 }
 
 export function StoryContainer({
@@ -22,6 +24,8 @@ export function StoryContainer({
   slides,
   autoAdvance = false,
   autoAdvanceDuration = 5,
+  isMuted = false,
+  onToggleMute,
 }: StoryContainerProps) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isPaused, setIsPaused] = useState(false);
@@ -291,6 +295,11 @@ export function StoryContainer({
 
         {/* Motion toggle */}
         <MotionToggle onToggle={handleMotionToggle} />
+
+        {/* Mute button */}
+        {onToggleMute && (
+          <MuteButton isMuted={isMuted} onToggle={onToggleMute} />
+        )}
 
         {/* Desktop hint banner for mobile users */}
         <DesktopHint />

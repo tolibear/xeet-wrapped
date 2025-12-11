@@ -3,13 +3,15 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion } from "framer-motion";
 import { TerminalGradient } from "@/components/backgrounds";
-import { RedButton } from "@/components/ui";
+import { RedButton, MuteButton } from "@/components/ui";
 import { cn } from "@/lib/utils/cn";
 
 interface AuthLandingProps {
   onSignIn: () => void;
   username?: string;
   onMusicStart?: () => void;
+  isMuted?: boolean;
+  onToggleMute?: () => void;
 }
 
 // Terminal log entry type
@@ -78,7 +80,7 @@ const TYPING_SPEED = 12;
 // Delay between lines
 const LINE_DELAY = 50;
 
-export function AuthLanding({ onSignIn, username = "user", onMusicStart }: AuthLandingProps) {
+export function AuthLanding({ onSignIn, username = "user", onMusicStart, isMuted = false, onToggleMute }: AuthLandingProps) {
   const [hasConnected, setHasConnected] = useState(false);
   const [currentLineIndex, setCurrentLineIndex] = useState(0);
   const [currentCharIndex, setCurrentCharIndex] = useState(0);
@@ -310,6 +312,12 @@ export function AuthLanding({ onSignIn, username = "user", onMusicStart }: AuthL
           </motion.div>
         </div>
       </div>
+      
+      {/* Mute button */}
+      {onToggleMute && (
+        <MuteButton isMuted={isMuted} onToggle={onToggleMute} />
+      )}
     </div>
   );
 }
+

@@ -120,3 +120,4 @@
 4. Add poster customization options (colors, layout)
 5. Create multiple demo personas for variety
 
+

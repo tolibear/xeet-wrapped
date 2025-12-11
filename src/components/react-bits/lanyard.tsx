@@ -224,7 +224,9 @@ function Band({ maxSpeed = 50, minSpeed = 0, isMobile = false, rotationMultiplie
         </RigidBody>
       </group>
       <mesh ref={band}>
+        {/* @ts-ignore - meshLineGeometry is extended via extend() call */}
         <meshLineGeometry />
+        {/* @ts-ignore - meshLineMaterial is extended via extend() call */}
         <meshLineMaterial
           color="white"
           depthTest={false}

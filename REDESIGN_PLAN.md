@@ -306,3 +306,4 @@ Update `src/lib/mock-data/index.ts` with:
 ✅ Most used word gets special ASCII treatment  
 ✅ Removed slides no longer clutter experience  
 ✅ All components match design system aesthetic
+
