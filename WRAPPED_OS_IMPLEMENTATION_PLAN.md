@@ -1,10 +1,12 @@
-# 🖥️ Xeet Wrapped OS — Implementation Plan
+# Xeet Wrapped OS — Implementation Plan
 
 > A phased transformation from "slides in a row" to a premium glassmorphic **Wrapped OS** experience
 
+**Icon Library:** All icons use [Lucide React](https://lucide.dev) — never emojis.
+
 ---
 
-## 🎯 Vision Summary
+## Vision Summary (Target icon)
 
 Transform Xeet Wrapped from a traditional slideshow into a **neon glass operating system** where each "chapter" feels like opening an app window. The user swipes through a cohesive, premium experience that feels expensive, shareable, and distinctly Xeet.
 
@@ -108,7 +110,15 @@ Navigation dock for chapter jumping:
 
 **Desktop spec:**
 - Left vertical dock (like a pro dashboard)
-- 8 circular icons (one per chapter)
+- 8 circular icons (one per chapter) — use Lucide icons:
+  - BootOS: `Zap`
+  - ID Passport: `BadgeCheck`
+  - Fingerprint: `Fingerprint`
+  - Pulse: `Activity`
+  - Gallery: `Image`
+  - Orbit: `Users`
+  - Trophy Room: `Trophy`
+  - Poster Studio: `Printer`
 - Current chapter highlighted with glow
 - Hover: scale up + tooltip
 
@@ -128,7 +138,7 @@ Navigation dock for chapter jumping:
 Per-chapter share button:
 
 **Spec:**
-- Small camera icon (top-right of frame)
+- Small camera icon (top-right of frame) — use Lucide's `Camera` icon
 - On tap: generates image of current chapter
 - Shows share modal with copy/download options
 - Works on every chapter (huge for virality!)
@@ -187,7 +197,7 @@ Replace current story container with new OS structure:
 3. Progress bar with module labels:
    - "reading timeline" → "finding bangers" → "mapping orbit" → "printing poster"
 4. Tiny reflection sweep across glass (like phone screen glare)
-5. CTA: glowing red pill "Continue →" (not a button)
+5. CTA: glowing red pill "Continue" with Lucide `ArrowRight` icon (not a button)
 
 **Hero reveal:** Username focus snap is THE moment
 
@@ -247,8 +257,10 @@ community love, and playful banter."
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 [Founder] [Engagement Farmooor] [Shitposter] [Creatoor]
 
-            🔴 THE BUILDER ERA
+            [Circle icon] THE BUILDER ERA
 ```
+
+*Note: Use Lucide's `Circle` icon with red fill for era badge*
 
 **Files to modify:**
 - `src/components/slides/identity-slide.tsx` → refactor as `src/components/chapters/id-passport.tsx`
@@ -485,8 +497,10 @@ Each lens changes:
   - Common (rest, smaller)
 
 **Mystery badge:**
-- One badge shows as "?" initially
+- One badge shows with a [HelpCircle icon] initially
 - Blur → crisp reveal animation (rare drop feeling!)
+
+*Note: Use Lucide's `HelpCircle` icon for mystery state*
 
 **Trust/quality badges (positive framing only):**
 - "Certified High-Signal Human" (from xeet_trust_score: 84)
@@ -494,10 +508,12 @@ Each lens changes:
 - No negative labels!
 
 **tolibear achievements example:**
-- 🏆 High Signal (trust score 84)
-- 👑 NFT Royalty (30% content)
-- 🔥 Engagement Farmer Supreme
-- 🛠️ Builder's Badge
+- [Trophy icon] High Signal (trust score 84)
+- [Crown icon] NFT Royalty (30% content)
+- [Flame icon] Engagement Farmer Supreme
+- [Wrench icon] Builder's Badge
+
+*Note: Use Lucide icons: `Trophy`, `Crown`, `Flame`, `Wrench`*
 
 **Files to modify:**
 - `src/components/slides/achievements-slide.tsx` → refactor as `src/components/chapters/trophy-room.tsx`
@@ -567,21 +583,23 @@ Terminal is no longer a chapter in the main flow. Instead:
 ### Trigger options:
 1. Triple-tap on glass frame edge
 2. Swipe down from top of frame
-3. Hidden icon in dock (question mark or gear)
+3. Hidden icon in dock (use Lucide's `HelpCircle` or `Settings` icon)
 
 ### Visual Spec
 
 **Panel slides down from top with:**
 - Retro terminal aesthetic (but Xeet red, not green)
-- Fun log messages:
+- Fun log messages with Lucide icons:
   ```
-  > scanning vibe... ✓
-  > detecting chaos levels... ⚠️ ELEVATED
-  > compiling bangers... ✓
-  > mapping social orbit... ✓
-  > generating poster... ✓
+  > scanning vibe... [Check]
+  > detecting chaos levels... [AlertTriangle] ELEVATED
+  > compiling bangers... [Check]
+  > mapping social orbit... [Check]
+  > generating poster... [Check]
   ```
 - Optional: show actual data points in fun format
+
+*Note: Use Lucide icons: `Check` for success, `AlertTriangle` for warnings*
 
 **Files to modify:**
 - `src/components/slides/terminal-slide.tsx` → refactor as `src/components/os/diagnostics-drawer.tsx`
@@ -741,6 +759,12 @@ src/
 # 🎨 Aesthetic Direction Confirmation
 
 The plan above assumes **"Cinematic Luxe"** — premium, glassy, red neon accents on black.
+
+**Icon System:**
+- **NEVER use emojis** — always use [Lucide React](https://lucide.dev) icons
+- Emojis feel cheap; high-quality icons feel premium
+- Consistent sizing and stroke width across all icons
+- All icons should be semantic and accessible
 
 Alternative aesthetics that could shift some details:
 - **Hacker terminal / glitch** — more scanlines, CRT effects, monospace fonts

@@ -7,6 +7,7 @@ import { StoryProvider } from "./story-context";
 import { ProgressRail } from "./progress-rail";
 import { StoryAnnouncer } from "./story-announcer";
 import { DesktopHint, MotionToggle, UserBubble, XeetLogo, ShareModal, MuteButton } from "@/components/ui";
+import { WrappedOS } from "@/components/os";
 import { useMobile } from "@/lib/hooks/use-mobile";
 import type { XeetWrappedData, NavigationDirection } from "@/lib/types";
 
@@ -234,6 +235,18 @@ export function StoryContainer({
     window.dispatchEvent(new Event("motion-toggle"));
   }, []);
 
+  // Chapter names for capture functionality
+  const chapterNames = [
+    "Boot OS",
+    "ID Passport",
+    "Fingerprint",
+    "Pulse",
+    "Gallery",
+    "Orbit",
+    "Trophy Room",
+    "Poster Studio",
+  ];
+
   const contextValue = {
     currentSlide,
     totalSlides,
@@ -249,70 +262,78 @@ export function StoryContainer({
 
   return (
     <StoryProvider value={contextValue}>
-      <div className="fixed inset-0 bg-background overflow-hidden">
-        <ProgressRail />
-        
-        {/* Global UI Components - visible on all slides except first (terminal) */}
-        {currentSlide > 0 && (
-          <>
-            <UserBubble
-              avatar={wrappedData.user.avatar}
-              handle={wrappedData.user.handle}
-              displayName={wrappedData.user.displayName}
-            />
-            <XeetLogo size="md" />
-            <ShareModal />
-          </>
-        )}
-        
-        <motion.div
-          className="h-screen w-screen cursor-pointer"
-          onPanEnd={handlePanEnd}
-          onClick={handleClick}
-          role="main"
-          aria-label="Story slides"
-        >
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={currentSlide}
-              variants={variants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{
-                duration: reducedMotion ? 0.2 : 0.4,
-                ease: "easeInOut",
-              }}
-              className="h-full w-full"
-            >
-              {slides[currentSlide]}
-            </motion.div>
-          </AnimatePresence>
-        </motion.div>
+      <WrappedOS
+        currentChapter={currentSlide}
+        totalChapters={totalSlides}
+        onChapterChange={jumpToSlide}
+        chapterName={chapterNames[currentSlide] || "Chapter"}
+        userHandle={wrappedData.user.handle}
+      >
+        <div className="fixed inset-0 bg-background overflow-hidden">
+          <ProgressRail />
+          
+          {/* Global UI Components - visible on all slides except first (terminal) */}
+          {currentSlide > 0 && (
+            <>
+              <UserBubble
+                avatar={wrappedData.user.avatar}
+                handle={wrappedData.user.handle}
+                displayName={wrappedData.user.displayName}
+              />
+              <XeetLogo size="md" />
+              <ShareModal />
+            </>
+          )}
+          
+          <motion.div
+            className="h-full w-full cursor-pointer"
+            onPanEnd={handlePanEnd}
+            onClick={handleClick}
+            role="main"
+            aria-label="Story slides"
+          >
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.div
+                key={currentSlide}
+                variants={variants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{
+                  duration: reducedMotion ? 0.2 : 0.4,
+                  ease: "easeInOut",
+                }}
+                className="h-full w-full"
+              >
+                {slides[currentSlide]}
+              </motion.div>
+            </AnimatePresence>
+          </motion.div>
 
-        {/* Screen reader announcements */}
-        <StoryAnnouncer />
+          {/* Screen reader announcements */}
+          <StoryAnnouncer />
 
-        {/* Motion toggle */}
-        <MotionToggle onToggle={handleMotionToggle} />
+          {/* Motion toggle */}
+          <MotionToggle onToggle={handleMotionToggle} />
 
-        {/* Mute button */}
-        {onToggleMute && (
-          <MuteButton isMuted={isMuted} onToggle={onToggleMute} />
-        )}
+          {/* Mute button */}
+          {onToggleMute && (
+            <MuteButton isMuted={isMuted} onToggle={onToggleMute} />
+          )}
 
-        {/* Desktop hint banner for mobile users */}
-        <DesktopHint />
+          {/* Desktop hint banner for mobile users */}
+          <DesktopHint />
 
-        {/* Debug info (optional, remove in production) */}
-        {process.env.NODE_ENV === "development" && (
-          <div className="fixed bottom-16 left-4 text-xs mono-caption text-white/40 pointer-events-none">
-            Slide {currentSlide + 1} / {totalSlides}
-            {isPaused && " (Paused)"}
-            {reducedMotion && " (Reduced Motion)"}
-          </div>
-        )}
-      </div>
+          {/* Debug info (optional, remove in production) */}
+          {process.env.NODE_ENV === "development" && (
+            <div className="fixed bottom-16 left-4 text-xs mono-caption text-white/40 pointer-events-none z-[200]">
+              Slide {currentSlide + 1} / {totalSlides}
+              {isPaused && " (Paused)"}
+              {reducedMotion && " (Reduced Motion)"}
+            </div>
+          )}
+        </div>
+      </WrappedOS>
     </StoryProvider>
   );
 }

@@ -35,6 +35,28 @@
   --font-size-headline-sm: 1.5rem;
   --font-size-body: 1rem;
   --font-size-caption: 0.875rem;
+
+  /* Shadow System - 4-tier elevation */
+  --shadow-ambient: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  --shadow-contact: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  --shadow-neon: 0 0 30px rgba(255, 0, 51, 0.15);
+  --shadow-inner: inset 0 1px 1px rgba(255, 255, 255, 0.05);
+
+  /* Elevation Levels */
+  /* E0 - text/labels - no shadow */
+  --elevation-e0: none;
+  
+  /* E1 - chips/pills - subtle elevation */
+  --elevation-e1: var(--shadow-contact);
+  
+  /* E2 - cards - medium elevation */
+  --elevation-e2: var(--shadow-ambient), var(--shadow-contact);
+  
+  /* E3 - hero tiles - maximum elevation with glow */
+  --elevation-e3: var(--shadow-ambient), var(--shadow-contact), var(--shadow-neon);
+  
+  /* OS Frame - special elevation for main container */
+  --elevation-os-frame: var(--shadow-ambient), var(--shadow-contact), var(--shadow-neon), var(--shadow-inner);
 }
 
 @theme inline {
