@@ -91,12 +91,33 @@ export function AuthLanding({ onSignIn, username = "user", onMusicStart, isMuted
   const [initialLineIndex, setInitialLineIndex] = useState(0);
   
   const terminalRef = useRef<HTMLDivElement>(null);
+  const isDev = process.env.NODE_ENV === 'development';
 
   const handleConnect = useCallback(() => {
     setHasConnected(true);
     setCurrentLineIndex(0);
     setCurrentCharIndex(0);
   }, []);
+
+  const handleSkip = useCallback(() => {
+    // Skip all animations and show final state immediately
+    setHasConnected(true);
+    setInitialTypingDone(true);
+    setIsTypingComplete(true);
+    setShowButton(true);
+    
+    // Set all displayed lines at once
+    const allLines = [
+      ...INITIAL_LOGS.map(log => log.text),
+      ...CONNECTION_LOGS.map(log => log.text),
+    ];
+    setDisplayedLines(allLines);
+    
+    // Start music if available
+    if (onMusicStart) {
+      onMusicStart();
+    }
+  }, [onMusicStart]);
 
   // Auto-scroll to bottom when new lines are added
   useEffect(() => {
@@ -290,6 +311,15 @@ export function AuthLanding({ onSignIn, username = "user", onMusicStart, isMuted
                 <p className="font-mono text-xs text-white/30">
                   Demo mode • No authentication required
                 </p>
+                {/* Dev-only skip button */}
+                {isDev && (
+                  <button
+                    onClick={handleSkip}
+                    className="mt-2 px-4 py-2 text-xs font-mono text-white/40 hover:text-white/60 border border-white/20 hover:border-white/40 rounded transition-colors"
+                  >
+                    [DEV] Skip Processing
+                  </button>
+                )}
               </motion.div>
             )}
 
@@ -317,7 +347,20 @@ export function AuthLanding({ onSignIn, username = "user", onMusicStart, isMuted
       {onToggleMute && (
         <MuteButton isMuted={isMuted} onToggle={onToggleMute} />
       )}
+
+      {/* Dev-only skip button (always visible in dev mode) */}
+      {isDev && !showButton && (
+        <button
+          onClick={handleSkip}
+          className="fixed top-4 right-4 z-50 px-3 py-1.5 text-xs font-mono text-white/40 hover:text-white/60 bg-black/40 hover:bg-black/60 border border-white/20 hover:border-white/40 rounded transition-colors backdrop-blur-sm"
+          title="Skip all processing animations"
+        >
+          [DEV] Skip
+        </button>
+      )}
     </div>
   );
 }
+
+
 

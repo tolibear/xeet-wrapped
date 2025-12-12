@@ -158,3 +158,4 @@ export function MuteButton({ isMuted, onToggle, className }: MuteButtonProps) {
   );
 }
 
+
